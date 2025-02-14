@@ -4,6 +4,8 @@ import com.salesianostriana.dam.jwt.security.security.jwt.access.JwtService;
 import com.salesianostriana.dam.jwt.security.security.jwt.refresh.RefreshToken;
 import com.salesianostriana.dam.jwt.security.security.jwt.refresh.RefreshTokenRequest;
 import com.salesianostriana.dam.jwt.security.security.jwt.refresh.RefreshTokenService;
+import com.salesianostriana.dam.jwt.security.security.jwt.verification.VerificationToken;
+import com.salesianostriana.dam.jwt.security.security.jwt.verification.VerificationTokenService;
 import com.salesianostriana.dam.jwt.security.user.dto.CreateUserRequest;
 import com.salesianostriana.dam.jwt.security.user.dto.LoginRequest;
 import com.salesianostriana.dam.jwt.security.user.dto.UserResponse;
@@ -18,10 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,13 +30,16 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final VerificationTokenService verificationTokenService;
 
     @PostMapping("/auth/register")
     public ResponseEntity<UserResponse> register(@RequestBody CreateUserRequest createUserRequest) {
         User user = userService.createUser(createUserRequest);
 
+        VerificationToken verificationToken = verificationTokenService.createToken(user);
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(UserResponse.of(user));
+                .body(UserResponse.of(user, verificationToken.getToken()));
     }
 
     @PostMapping("/auth/login")
@@ -85,6 +87,18 @@ public class UserController {
     @GetMapping("/me/admin")
     public User adminMe(@AuthenticationPrincipal User user) {
         return user;
+    }
+
+    @PutMapping("/auth/user/verify")
+    public UserResponse verifyUser(@RequestParam String token) {
+
+        return UserResponse.of(verificationTokenService.verifyUser(token));
+    }
+
+    @PostMapping("/auth/user/verify/refresh")
+    public UserResponse refreshVerification(@RequestParam String token) {
+
+        return verificationTokenService.refreshToken(token);
     }
 
 }
