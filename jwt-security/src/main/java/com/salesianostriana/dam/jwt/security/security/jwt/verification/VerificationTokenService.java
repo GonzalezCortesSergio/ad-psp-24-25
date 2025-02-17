@@ -40,9 +40,9 @@ public class VerificationTokenService {
         return token;
     }
 
-    public User verifyUser(String token) {
+    public User verifyUser(VerificationTokenRequest token) {
 
-        return verificationTokenRepository.findById(UUID.fromString(token))
+        return verificationTokenRepository.findById(UUID.fromString(token.verificationToken()))
                 .map(this::verifyToken)
                 .map(VerificationToken::getUser)
                 .map(usuario -> {
@@ -54,9 +54,9 @@ public class VerificationTokenService {
                 .orElseThrow(() -> new VerificationTokenException("No se ha encontrado el token"));
     }
 
-    public UserResponse refreshToken(String token) {
+    public UserResponse refreshToken(VerificationTokenRequest token) {
 
-        return verificationTokenRepository.findById(UUID.fromString(token))
+        return verificationTokenRepository.findById(UUID.fromString(token.verificationToken()))
                 .map(VerificationToken::getUser)
                 .map(user -> {
 

@@ -5,6 +5,7 @@ import com.salesianostriana.dam.jwt.security.security.jwt.refresh.RefreshToken;
 import com.salesianostriana.dam.jwt.security.security.jwt.refresh.RefreshTokenRequest;
 import com.salesianostriana.dam.jwt.security.security.jwt.refresh.RefreshTokenService;
 import com.salesianostriana.dam.jwt.security.security.jwt.verification.VerificationToken;
+import com.salesianostriana.dam.jwt.security.security.jwt.verification.VerificationTokenRequest;
 import com.salesianostriana.dam.jwt.security.security.jwt.verification.VerificationTokenService;
 import com.salesianostriana.dam.jwt.security.user.dto.CreateUserRequest;
 import com.salesianostriana.dam.jwt.security.user.dto.LoginRequest;
@@ -90,13 +91,13 @@ public class UserController {
     }
 
     @PutMapping("/auth/user/verify")
-    public UserResponse verifyUser(@RequestParam String token) {
+    public UserResponse verifyUser(@RequestBody VerificationTokenRequest token) {
 
         return UserResponse.of(verificationTokenService.verifyUser(token));
     }
 
     @PostMapping("/auth/user/verify/refresh")
-    public UserResponse refreshVerification(@RequestParam String token) {
+    public UserResponse refreshVerification(@RequestBody VerificationTokenRequest token) {
 
         return verificationTokenService.refreshToken(token);
     }
