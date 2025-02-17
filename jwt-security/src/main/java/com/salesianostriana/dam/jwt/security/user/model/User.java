@@ -2,11 +2,13 @@ package com.salesianostriana.dam.jwt.security.user.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +33,13 @@ public class User implements UserDetails {
     private String username;
 
     private String password;
+
+    private String email;
+
+    private String activationToken;
+
+    @CreationTimestamp
+    private LocalDate createdAt;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<UserRole> roles;

@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,10 +23,17 @@ public class UserService {
         User user = User.builder()
                 .username(createUserRequest.username())
                 .password(passwordEncoder.encode(createUserRequest.password()))
+                .email(createUserRequest.email())
+                .activationToken(generateVerifyToken())
                 .roles(Set.of(UserRole.USER))
                 .build();
 
         return userRepository.save(user);
+    }
+
+    private String generateVerifyToken() {
+
+        return UUID.randomUUID().toString();
     }
 
 }
